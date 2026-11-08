@@ -1,19 +1,21 @@
-import { Button } from "@/components/ui/button"
+import { SiteNavbar } from "@/components/site-navbar"
 
 export default function Page() {
   return (
-    <div className="flex min-h-svh p-6">
-      <div className="flex max-w-md min-w-0 flex-col gap-4 text-sm leading-loose">
-        <div>
-          <h1 className="font-medium">Project ready!</h1>
-          <p>You may now add components and start building.</p>
-          <p>We&apos;ve already added the button component for you.</p>
-          <Button className="mt-2">Button</Button>
+    <div className="relative min-h-svh overflow-hidden bg-[#0e0b16]">
+      <SiteNavbar />
+
+      <main className="mx-auto flex min-h-svh w-full max-w-[1440px] flex-col justify-center px-6 pt-28 pb-16 lg:px-[60px]">
+        <div className="max-w-2xl">
+          <h1 className="font-manrope text-4xl leading-tight font-semibold text-white sm:text-5xl lg:text-6xl">
+            Your next role is already looking for you
+          </h1>
+          <p className="mt-5 max-w-xl font-manrope text-lg text-white/70">
+            Build a profile in three minutes. The matches start arriving
+            tomorrow morning.
+          </p>
         </div>
-        <div className="font-mono text-xs text-muted-foreground">
-          (Press <kbd>d</kbd> to toggle dark mode)
-        </div>
-      </div>
+      </main>
     </div>
   )
 }
