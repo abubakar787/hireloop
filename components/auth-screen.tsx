@@ -39,7 +39,15 @@ export function AuthScreen({ mode, onFormSubmit }: AuthScreenProps) {
 
     // Development-only form preview. Never log credentials in production.
     if (process.env.NODE_ENV !== "production") {
-      console.info(`[HireLoop ${mode} form data]`, values)
+      const preview = { ...values }
+
+      for (const fieldName of ["password", "confirmPassword"]) {
+        if (fieldName in preview) {
+          preview[fieldName] = "[redacted]"
+        }
+      }
+
+      console.info(`[HireLoop ${mode} form data]`, preview)
     }
 
     setIsSubmitting(true)
@@ -48,7 +56,7 @@ export function AuthScreen({ mode, onFormSubmit }: AuthScreenProps) {
     try {
       if (onFormSubmit) {
         await onFormSubmit(values)
-        setMessage("Your account was created successfully.")
+        setMessage("Your request completed successfully.")
       } else {
         setMessage(
           "Your form is ready. Authentication will be connected later."
