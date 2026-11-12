@@ -24,6 +24,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar"
 import { useSession } from "@/lib/auth-client"
 
@@ -179,6 +180,7 @@ function getDashboardRole(
 export function DashboardSidebar() {
   const { data: session } = useSession()
   const pathname = usePathname()
+  const { isMobile, setOpenMobile } = useSidebar()
   // Better Auth may not set `role` for a new account. Use its selected account
   // type for seeker/recruiter navigation, but never to grant admin navigation.
   const role = getDashboardRole(
@@ -195,7 +197,12 @@ export function DashboardSidebar() {
           <SidebarMenu>
             {menuItemsByRole[role].map((item) => (
               <SidebarMenuItem key={item.id}>
-                <SidebarMenuButton render={<Link href={item.url} />}>
+                <SidebarMenuButton
+                  render={<Link href={item.url} />}
+                  onClick={() => {
+                    if (isMobile) setOpenMobile(false)
+                  }}
+                >
                   <item.icon aria-hidden="true" />
                   <span>{item.name}</span>
                 </SidebarMenuButton>
