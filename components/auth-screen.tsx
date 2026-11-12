@@ -10,12 +10,15 @@ import {
   EyeOff,
   LockKeyhole,
   Mail,
+  ShieldCheck,
   UserRound,
 } from "lucide-react"
 import { useState, type FormEvent } from "react"
 
 type AuthMode = "sign-in" | "sign-up"
-export type AuthFormValues = Record<string, FormDataEntryValue>
+export type AuthFormValues = Record<string, FormDataEntryValue> & {
+  accountType?: "seeker" | "recruiter" | "admin"
+}
 
 type AuthScreenProps = {
   mode: AuthMode
@@ -30,7 +33,7 @@ export function AuthScreen({ mode, onFormSubmit }: AuthScreenProps) {
   const [showPassword, setShowPassword] = useState(false)
   const [message, setMessage] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [accountType, setAccountType] = useState("job-seeker")
+  const [accountType, setAccountType] = useState("seeker")
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -219,20 +222,37 @@ export function AuthScreen({ mode, onFormSubmit }: AuthScreenProps) {
                   </div>
                   <fieldset>
                     <legend className="mb-2 text-sm font-medium text-white/80">
-                      I’m here to
+                      Account type
                     </legend>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-3 gap-2">
                       {[
-                        { value: "job-seeker", label: "Find a job" },
-                        { value: "recruiter", label: "Hire talent" },
+                        {
+                          value: "seeker",
+                          label: "Seeker",
+                          icon: UserRound,
+                        },
+                        {
+                          value: "recruiter",
+                          label: "Recruiter",
+                          icon: BriefcaseBusiness,
+                        },
+                        {
+                          value: "admin",
+                          label: "Admin",
+                          icon: ShieldCheck,
+                        },
                       ].map((option) => (
                         <button
                           key={option.value}
                           type="button"
                           onClick={() => setAccountType(option.value)}
                           aria-pressed={accountType === option.value}
-                          className={`h-11 rounded-xl border px-3 text-sm transition ${accountType === option.value ? "border-[#756cff]/70 bg-[#756cff]/12 text-white" : "border-white/10 bg-[#111114] text-white/55 hover:border-white/20 hover:text-white"}`}
+                          className={`inline-flex h-11 items-center justify-center gap-1.5 rounded-xl border px-2 text-xs transition sm:text-sm ${accountType === option.value ? "border-[#756cff]/70 bg-[#756cff]/12 text-white" : "border-white/10 bg-[#111114] text-white/55 hover:border-white/20 hover:text-white"}`}
                         >
+                          <option.icon
+                            className="size-4 shrink-0"
+                            aria-hidden="true"
+                          />
                           {option.label}
                         </button>
                       ))}
@@ -242,6 +262,9 @@ export function AuthScreen({ mode, onFormSubmit }: AuthScreenProps) {
                       name="accountType"
                       value={accountType}
                     />
+                    <p className="mt-2 text-xs text-white/40">
+                      Admin access may require approval.
+                    </p>
                   </fieldset>
                 </>
               )}

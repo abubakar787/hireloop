@@ -12,6 +12,7 @@ export default function SignUpPage() {
       name: String(values.fullName ?? ""),
       email: String(values.email ?? ""),
       password: String(values.password ?? ""),
+      accountType: values.accountType ?? "seeker",
       callbackURL: "/",
     })
 

@@ -1,7 +1,16 @@
 "use client"
 
 import { motion, type Variants } from "framer-motion"
-import { Briefcase, ChartColumn, Search, Star, UserSearch } from "lucide-react"
+import Image from "next/image"
+import Link from "next/link"
+import {
+  BriefcaseBusiness,
+  ChartColumn,
+  MapPin,
+  Search,
+  Star,
+  UserSearch,
+} from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
@@ -40,22 +49,42 @@ const statVariants: Variants = {
 function HeroSection({ className }: React.ComponentProps<"section">) {
   return (
     <section className={cn("relative overflow-hidden bg-[#010103]", className)}>
-      {/* Ambient background: aurora behind the navbar/hero copy */}
+      {/* Figma's subtle charcoal glow behind the hero copy */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0">
         <div
-          className="absolute -top-56 left-1/2 h-[620px] w-[1240px] max-w-none -translate-x-1/2 rounded-full opacity-30 blur-[120px] max-md:-top-24 max-md:h-[380px] max-md:w-[720px]"
+          className="absolute inset-x-0 top-0 h-[380px]"
           style={{
             background:
-              "radial-gradient(50% 50% at 50% 50%, rgba(92,83,254,0.9) 0%, rgba(97,79,251,0.55) 55%, transparent 75%)",
+              "radial-gradient(ellipse 55% 70% at 50% 0%, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.025) 50%, transparent 100%)",
           }}
-        />
-        <div
-          className="absolute -top-24 left-[12%] h-[360px] w-[520px] rounded-full opacity-15 blur-[110px]"
-          style={{ background: "#dc02ce" }}
         />
       </div>
 
-      <div className="relative z-10 mx-auto w-full max-w-[1440px] px-6 pt-24 pb-16 lg:px-[60px] md:pt-[204px] md:pb-[72px]">
+      {/* Starfield and globe are layered behind the headline and stats. */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+        <Image
+          src="/images/hero-stars.png"
+          alt=""
+          width={816}
+          height={505}
+          priority
+          className="absolute top-[clamp(270px,calc(52vw_-_220px),538px)] left-1/2 h-auto w-[min(1180px,130vw)] max-w-none -translate-x-1/2 opacity-80"
+        />
+        <Image
+          src="/images/globe.png"
+          alt=""
+          width={1440}
+          height={1882}
+          priority
+          className="absolute top-[clamp(-250px,calc(340px_-_52vw),150px)] left-1/2 h-auto w-full max-w-[1440px] -translate-x-1/2"
+          style={{
+            maskImage:
+              "linear-gradient(to bottom, transparent 0%, transparent 43%, black 55%, black 100%)",
+          }}
+        />
+      </div>
+
+      <div className="relative z-10 mx-auto w-full max-w-[1440px] px-6 pt-24 pb-16 md:pt-[204px] md:pb-[72px] lg:px-[60px]">
         <motion.div
           initial="hidden"
           animate="visible"
@@ -64,43 +93,105 @@ function HeroSection({ className }: React.ComponentProps<"section">) {
         >
           {/* Announcement badge */}
           <motion.div variants={fadeInUp} className="flex items-center">
-            <span aria-hidden="true" className="hidden h-px w-16 bg-white/20 sm:block" />
-            <span className="flex items-center rounded-full border border-white/30 bg-[linear-gradient(180deg,#212126_0%,#040405_100%)] py-3 pr-6 pl-5 shadow-[inset_0_1px_2px_rgba(255,255,255,0.25)]">
-              <Briefcase className="size-6 text-white" />
-              <span className="ml-4 font-mono text-base text-white sm:text-lg">
-                50,000+ new jobs this month
+            <span
+              aria-hidden="true"
+              className="hidden h-px w-16 bg-white/20 sm:block"
+            />
+            <span className="flex h-12 items-center rounded-full border border-white/30 bg-[linear-gradient(180deg,#212126_0%,#040405_100%)] px-4 shadow-[inset_0_1px_2px_rgba(255,255,255,0.25)] sm:px-5">
+              <BriefcaseBusiness
+                className="size-[18px] shrink-0 text-[#f5a623]"
+                strokeWidth={2.2}
+              />
+              <span className="ml-2.5 font-mono text-[11px] tracking-[0.04em] whitespace-nowrap text-white sm:text-xs">
+                <strong className="font-bold tracking-normal">50,000+</strong>
+                <span className="ml-2 tracking-[0.16em] text-white/55 uppercase">
+                  New jobs this month
+                </span>
               </span>
             </span>
-            <span aria-hidden="true" className="hidden h-px w-16 bg-white/20 sm:block" />
+            <span
+              aria-hidden="true"
+              className="hidden h-px w-16 bg-white/20 sm:block"
+            />
           </motion.div>
 
           <motion.h1
             variants={fadeInUp}
-            className="mt-8 font-manrope text-4xl font-bold leading-tight text-white sm:text-5xl lg:text-[56px]"
+            className="mt-8 font-manrope text-4xl leading-tight font-bold text-white sm:text-[40px] md:text-5xl lg:text-[56px]"
           >
             Find Your Dream Job Today
           </motion.h1>
 
           <motion.p
             variants={fadeInUp}
-            className="mt-4 max-w-2xl font-manrope text-lg text-white/70 sm:text-xl"
+            className="mt-4 max-w-[784px] font-manrope text-base leading-6 text-white/70 sm:text-lg sm:leading-7"
           >
             HireLoop connects top talent with world-class companies. Browse
             thousands of curated opportunities and land your next role — faster.
           </motion.p>
 
-          {/* Search bar */}
-          <motion.div variants={fadeInUp} className="mt-11 w-full md:mt-[118px]">
+          {/* Figma search: keyword + location fields and a purple submit button */}
+          <motion.div
+            variants={fadeInUp}
+            className="mt-8 w-full max-w-[784px] sm:mt-10"
+          >
             <form action="/jobs" method="get">
-              <div className="flex h-16 items-center rounded-2xl border border-white/20 bg-[#101010] pr-4 pl-6 transition-colors outline-none focus-within:border-brand focus-within:ring-3 focus-within:ring-brand/50">
-                <Search className="size-6 shrink-0 text-white" strokeWidth={1.5} />
-                <input
-                  type="search"
-                  name="q"
-                  placeholder="Job title, skill or company"
-                  aria-label="Search jobs"
-                  className="h-full w-full bg-transparent pl-8 text-base text-white placeholder:text-white/80 focus:outline-none"
+              <div className="rounded-2xl border border-white/20 bg-[#101010] p-2 transition-colors focus-within:border-brand focus-within:ring-3 focus-within:ring-brand/40 sm:flex sm:h-16 sm:items-center sm:rounded-[16px] sm:pr-2 sm:pl-5">
+                <div className="flex h-12 items-center sm:h-full sm:min-w-0 sm:flex-1">
+                  <Search
+                    className="size-5 shrink-0 text-white"
+                    strokeWidth={1.5}
+                  />
+                  <input
+                    type="search"
+                    name="q"
+                    placeholder="Job title, skill or company"
+                    aria-label="Job title, skill or company"
+                    className="h-full min-w-0 flex-1 bg-transparent pl-3 text-xs text-white placeholder:text-white/65 focus:outline-none sm:text-sm"
+                  />
+                </div>
+                <span
+                  aria-hidden="true"
+                  className="hidden h-6 w-px bg-white/15 sm:block"
                 />
+                <div className="flex h-12 items-center border-t border-white/10 sm:h-full sm:min-w-0 sm:flex-1 sm:border-0 sm:pl-4">
+                  <MapPin
+                    className="size-5 shrink-0 text-white"
+                    strokeWidth={1.5}
+                  />
+                  <input
+                    type="text"
+                    name="location"
+                    placeholder="Location or Remote"
+                    aria-label="Location or Remote"
+                    className="h-full min-w-0 flex-1 bg-transparent pl-3 text-xs text-white placeholder:text-white/65 focus:outline-none sm:text-sm"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  aria-label="Search jobs"
+                  className="flex h-12 w-full shrink-0 items-center justify-center gap-2 rounded-xl bg-brand text-brand-foreground transition-colors hover:bg-brand/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand sm:w-12"
+                >
+                  <Search className="size-5" strokeWidth={1.7} />
+                  <span className="text-sm font-medium sm:hidden">Search</span>
+                </button>
+              </div>
+
+              <div className="mt-4 flex flex-wrap items-center justify-center gap-2 text-xs sm:gap-1.5">
+                <span className="mr-1 text-white/60 sm:text-sm">
+                  Trending Position
+                </span>
+                {["Product Designer", "AI Engineering", "Dev-ops Engineer"].map(
+                  (term) => (
+                    <Link
+                      key={term}
+                      href={`/jobs?q=${encodeURIComponent(term)}`}
+                      className="rounded-full border border-white/10 bg-[#1a1a1b] px-3 py-1.5 text-[11px] text-white/85 transition-colors hover:border-white/25 hover:bg-white/10 sm:text-xs"
+                    >
+                      {term}
+                    </Link>
+                  )
+                )}
               </div>
             </form>
           </motion.div>
@@ -113,24 +204,6 @@ function HeroSection({ className }: React.ComponentProps<"section">) {
           viewport={{ once: true, amount: 0.2 }}
           className="relative z-10 mt-40 md:mt-[415px]"
         >
-          {/* Glow + line art, positioned as in the Figma design */}
-          <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-            <div
-              className="absolute top-1/2 left-1/2 h-[1036px] w-[1240px] max-w-none -translate-x-1/2 -translate-y-1/2 rounded-full blur-[60px]"
-              style={{
-                background:
-                  "radial-gradient(closest-side, rgba(92,83,254,0.85) 0%, rgba(92,83,254,0.6) 29%, rgba(92,83,254,0.5) 52%, rgba(92,83,254,0) 100%)",
-              }}
-            />
-            <div
-              className="absolute top-[-160px] left-1/2 w-[1100px] max-w-none -translate-x-1/2 md:top-[-415px] md:w-[1744px]"
-              style={{
-                aspectRatio: "1744 / 741",
-                background: "url('/images/hero-lines.svg') center top / 100% 100% no-repeat",
-              }}
-            />
-          </div>
-
           <motion.h2
             initial="hidden"
             whileInView="visible"
@@ -160,7 +233,9 @@ function HeroSection({ className }: React.ComponentProps<"section">) {
                   <p className="font-manrope text-[40px] leading-none font-semibold text-white sm:text-[56px] sm:leading-[1.15]">
                     {stat.value}
                   </p>
-                  <p className="mt-4 font-sans text-lg text-white">{stat.label}</p>
+                  <p className="mt-4 font-sans text-lg text-white">
+                    {stat.label}
+                  </p>
                 </div>
               </motion.div>
             ))}

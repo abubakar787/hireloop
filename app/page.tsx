@@ -1,4 +1,5 @@
 import { HeroSection } from "@/components/hero-section"
+import { HomeContentSections } from "@/components/home-content-sections"
 import { SiteNavbar } from "@/components/site-navbar"
 
 export default function Page() {
@@ -7,6 +8,7 @@ export default function Page() {
       <SiteNavbar />
       <main>
         <HeroSection />
+        <HomeContentSections />
       </main>
     </div>
   )

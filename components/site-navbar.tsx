@@ -14,11 +14,12 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
+import { useSession, signOut } from "@/lib/auth-client"
 
 const navLinks = [
-  { label: "Browse Jobs", href: "/jobs" },
-  { label: "Company", href: "/companies" },
-  { label: "Pricing", href: "/pricing" },
+  { label: "Browse Jobs", href: "/#jobs" },
+  { label: "Company", href: "/#companies" },
+  { label: "Pricing", href: "/#pricing" },
 ]
 
 const authLinkClass =
@@ -29,6 +30,17 @@ const signInClass = `${authLinkClass} text-brand hover:bg-white/5`
 const getStartedClass = `${authLinkClass} border border-black/10 bg-brand text-brand-foreground shadow-[inset_0_3px_10px_rgba(255,255,255,0.2)] hover:bg-brand/90`
 
 function SiteNavbar() {
+  const { data: session } = useSession()
+  console.log("user session navbar", session) // Replace with actual session data retrieval logic
+  const handleSignOut = async () => {
+    try {
+      await signOut({ callbackURL: "/" })
+    } catch (error) {
+      console.error("Error signing out:", error)
+    }
+  }
+  
+  
   return (
     <header className="absolute inset-x-0 top-0 z-50">
       <div className="mx-auto w-full max-w-[1440px] px-4 sm:px-8 lg:px-[60px]">
@@ -66,12 +78,27 @@ function SiteNavbar() {
             <span aria-hidden="true" className="h-6 w-px bg-[#a8a8a8]/40" />
 
             <div className="flex items-center gap-4 pl-6">
-              <Link href="/sign-in" className={signInClass}>
-                Sign In
-              </Link>
-              <Link href="/sign-up" className={getStartedClass}>
-                Get Started
-              </Link>
+              {session?.user ? (
+                <>
+                <span className="text-white">Welcome, {session.user.name}</span>
+                <Button
+                  variant="ghost"
+                  onClick={handleSignOut}
+                  className="text-white hover:bg-white/10 hover:text-white"
+                >
+                  Sign Out
+                </Button>
+                </>
+              ) : (
+                <>
+                  <Link href="/sign-in" className={signInClass}>
+                    Sign In
+                  </Link>
+                  <Link href="/sign-up" className={getStartedClass}>
+                    Get Started
+                  </Link>
+                </>
+              )}
             </div>
           </div>
 
