@@ -1,12 +1,14 @@
 "use client"
 
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import {
   Bookmark,
   BriefcaseBusiness,
   Building2,
   ClipboardList,
   CreditCard,
+  FilePlus2,
   LayoutDashboard,
   Settings,
   Users,
@@ -93,6 +95,12 @@ const menuItemsByRole: Record<DashboardRole, DashboardMenuItem[]> = {
       icon: BriefcaseBusiness,
     },
     {
+      id: "create-job",
+      name: "Add Job",
+      url: "/dashboard/recruiter/jobs/new",
+      icon: FilePlus2,
+    },
+    {
       id: "applications",
       name: "Applications",
       url: "/dashboard/recruiter/applications",
@@ -145,17 +153,39 @@ const menuItemsByRole: Record<DashboardRole, DashboardMenuItem[]> = {
   ],
 }
 
-function isDashboardRole(role: string | undefined): role is DashboardRole {
+function isDashboardRole(role: unknown): role is DashboardRole {
   return role === "seeker" || role === "recruiter" || role === "admin"
+}
+
+function getDashboardRole(
+  pathname: string,
+  role: unknown,
+  accountType: unknown
+): DashboardRole {
+  // Use the dashboard area being viewed so each role area has its own menu.
+  // This only selects navigation; server-side authorization must protect pages.
+  if (pathname.startsWith("/dashboard/admin")) return "admin"
+  if (pathname.startsWith("/dashboard/recruiter")) return "recruiter"
+  if (pathname.startsWith("/dashboard/seekers")) return "seeker"
+
+  // Admin navigation requires the authorized role; signup accountType alone
+  // must never grant admin access.
+  if (role === "admin") return "admin"
+  if (role === "recruiter" || accountType === "recruiter") return "recruiter"
+  if (isDashboardRole(role)) return role
+  return "seeker"
 }
 
 export function DashboardSidebar() {
   const { data: session } = useSession()
-  // accountType is a signup preference; only the authorized role controls menus.
-  const sessionRole = session?.user?.role
-  const role: DashboardRole = isDashboardRole(sessionRole)
-    ? sessionRole
-    : "seeker"
+  const pathname = usePathname()
+  // Better Auth may not set `role` for a new account. Use its selected account
+  // type for seeker/recruiter navigation, but never to grant admin navigation.
+  const role = getDashboardRole(
+    pathname,
+    session?.user?.role,
+    session?.user?.accountType
+  )
 
   return (
     <Sidebar>

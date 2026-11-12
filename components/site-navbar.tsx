@@ -16,11 +16,7 @@ import {
 } from "@/components/ui/sheet"
 import { useSession, signOut } from "@/lib/auth-client"
 
-const navLinks = [
-  { label: "Browse Jobs", href: "/#jobs" },
-  { label: "Company", href: "/#companies" },
-  { label: "Pricing", href: "/#pricing" },
-]
+
 
 const authLinkClass =
   "inline-flex h-13 items-center justify-center rounded-[12px] px-6 font-manrope text-lg font-semibold transition-colors outline-none focus-visible:ring-3 focus-visible:ring-brand/50"
@@ -31,7 +27,16 @@ const getStartedClass = `${authLinkClass} border border-black/10 bg-brand text-b
 
 function SiteNavbar() {
   const { data: session } = useSession()
-  console.log("user session navbar", session) // Replace with actual session data retrieval logic
+    
+  const navLinks = [
+  { label: "Browse Jobs", href: "/#jobs" },
+  { label: "Company", href: "/#companies" },
+  { label: "Pricing", href: "/#pricing" },
+  { label: "Dashboard", href:  `/dashboard/${session?.user.role || 'seeker'}` },
+]
+  
+  
+  
   const handleSignOut = async () => {
     try {
       await signOut({ callbackURL: "/" })
