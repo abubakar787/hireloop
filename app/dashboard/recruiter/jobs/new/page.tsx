@@ -2,28 +2,13 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import { type FormEvent } from "react"
+import { useState, type FormEvent } from "react"
 import { ArrowRight, ChevronRight, MapPin } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-
-type JobPostValues = {
-  title: string
-  company: string
-  category: string
-  type: string
-  location: string
-  deadline: string
-  currency: string
-  minSalary: string
-  maxSalary: string
-  frequency: string
-  isRemote: boolean
-  responsibilities: string
-  requirements: string
-  benefits: string
-}
+import { createJob } from "@/lib/actions/jobs"
+import type { JobFormData } from "@/lib/types/jobs"
 
 const inputClass =
   "h-11 rounded-lg border-slate-200 bg-white px-3 text-sm shadow-none placeholder:text-slate-400 focus-visible:border-violet-500 focus-visible:ring-violet-500/20"
@@ -51,11 +36,17 @@ function SectionCard({
 }
 
 export default function NewJobForm() {
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitResult, setSubmitResult] = useState<{
+    success: boolean
+    message: string
+  } | null>(null)
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
     const formData = new FormData(event.currentTarget)
-    const values: JobPostValues = {
+    const values: JobFormData = {
       title: String(formData.get("title") ?? ""),
       company: String(formData.get("company") ?? ""),
       category: String(formData.get("category") ?? ""),
@@ -72,8 +63,19 @@ export default function NewJobForm() {
       benefits: String(formData.get("benefits") ?? ""),
     }
 
-    // Keep the captured values together in one simple object for the future API.
-    console.info("Captured job form data:", values)
+    setIsSubmitting(true)
+    setSubmitResult(null)
+
+    try {
+      setSubmitResult(await createJob(values))
+    } catch {
+      setSubmitResult({
+        success: false,
+        message: "Could not submit the job. Please try again.",
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -122,6 +124,19 @@ export default function NewJobForm() {
           </div>
         </header>
 
+        {submitResult && (
+          <div
+            role={submitResult.success ? "status" : "alert"}
+            className={`mb-5 rounded-lg border px-4 py-3 text-sm ${
+              submitResult.success
+                ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+                : "border-red-200 bg-red-50 text-red-800"
+            }`}
+          >
+            {submitResult.message}
+          </div>
+        )}
+
         <form id="new-job-form" onSubmit={handleSubmit} className="space-y-5">
           <SectionCard number="1" title="Basic Information">
             <div className="space-y-5">
@@ -134,7 +149,6 @@ export default function NewJobForm() {
                   name="title"
                   className={inputClass}
                   placeholder="e.g. Frontend Developer"
-                  defaultValue="Frontend Developer"
                   required
                 />
               </div>
@@ -149,7 +163,6 @@ export default function NewJobForm() {
                     name="company"
                     className={inputClass}
                     placeholder="Your company"
-                    defaultValue="HirePulse Network"
                     required
                   />
                 </div>
@@ -161,9 +174,12 @@ export default function NewJobForm() {
                     id="job-category"
                     name="category"
                     className={`${inputClass} w-full appearance-none border border-slate-200 bg-white px-3`}
-                    defaultValue="Engineering & Tech"
+                    defaultValue=""
                     required
                   >
+                    <option value="" disabled>
+                      Select a category
+                    </option>
                     <option>Engineering &amp; Tech</option>
                     <option>Design</option>
                     <option>Product</option>
@@ -184,9 +200,12 @@ export default function NewJobForm() {
                   id="job-type"
                   name="type"
                   className={`${inputClass} w-full appearance-none border border-slate-200 bg-white px-3`}
-                  defaultValue="Full-time"
+                  defaultValue=""
                   required
                 >
+                  <option value="" disabled>
+                    Select a job type
+                  </option>
                   <option>Full-time</option>
                   <option>Part-time</option>
                   <option>Contract</option>
@@ -203,7 +222,6 @@ export default function NewJobForm() {
                   type="checkbox"
                   name="isRemote"
                   className="size-4 accent-violet-600"
-                  defaultChecked
                 />
                 Remote work available
               </label>
@@ -223,7 +241,6 @@ export default function NewJobForm() {
                       name="location"
                       className={`${inputClass} pl-9`}
                       placeholder="City, country or Remote"
-                      defaultValue="New York, USA"
                       required
                     />
                   </div>
@@ -237,7 +254,6 @@ export default function NewJobForm() {
                     name="deadline"
                     type="date"
                     className={inputClass}
-                    defaultValue="2026-12-31"
                   />
                 </div>
               </div>
@@ -252,7 +268,6 @@ export default function NewJobForm() {
                     className={inputClass}
                     placeholder="Minimum"
                     aria-label="Minimum salary"
-                    defaultValue="120000"
                   />
                   <Input
                     name="maxSalary"
@@ -261,7 +276,6 @@ export default function NewJobForm() {
                     className={inputClass}
                     placeholder="Maximum"
                     aria-label="Maximum salary"
-                    defaultValue="160000"
                   />
                   <select
                     name="currency"
@@ -302,7 +316,6 @@ export default function NewJobForm() {
                   required
                   placeholder="Describe the main responsibilities of this role."
                   className="w-full resize-y rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none placeholder:text-slate-400 focus-visible:border-violet-500 focus-visible:ring-3 focus-visible:ring-violet-500/20"
-                  defaultValue="Build and maintain responsive user interfaces using React and TypeScript. Work closely with design and product teams to deliver accessible, polished experiences. Review code and help improve our frontend tools."
                 />
               </div>
               <div>
@@ -317,7 +330,6 @@ export default function NewJobForm() {
                   required
                   placeholder="List the experience, skills, and qualifications candidates need."
                   className="w-full resize-y rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none placeholder:text-slate-400 focus-visible:border-violet-500 focus-visible:ring-3 focus-visible:ring-violet-500/20"
-                  defaultValue="3+ years of experience with React and TypeScript. Strong understanding of HTML, CSS, accessibility, and responsive design. Comfortable collaborating with product and design teams."
                 />
               </div>
               <div>
@@ -331,7 +343,6 @@ export default function NewJobForm() {
                   rows={3}
                   placeholder="Share benefits, perks, or other details."
                   className="w-full resize-y rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none placeholder:text-slate-400 focus-visible:border-violet-500 focus-visible:ring-3 focus-visible:ring-violet-500/20"
-                  defaultValue="Health and dental coverage, flexible PTO, remote-friendly team, and an annual learning budget."
                 />
               </div>
             </div>
@@ -346,9 +357,11 @@ export default function NewJobForm() {
             </Link>
             <Button
               type="submit"
+              disabled={isSubmitting}
               className="h-10 bg-violet-600 px-5 text-white hover:bg-violet-700"
             >
-              Publish Job <ArrowRight aria-hidden="true" />
+              {isSubmitting ? "Publishing..." : "Publish Job"}
+              {!isSubmitting && <ArrowRight aria-hidden="true" />}
             </Button>
           </div>
         </form>
